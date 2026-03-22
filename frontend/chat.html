@@ -202,8 +202,7 @@ function addMessage(role,text){
 
 async function loadHistory(){
 
-    const res=await fetch(`http://127.0.0.1:8000/history/${session_id}`)
-
+    const res=await fetch(`http://127.0.0.1:8000/history/${session_id}?user_id=${user_id}`)
     const data=await res.json()
 
     for(let m of data){
@@ -238,7 +237,8 @@ async function send(){
 
         body:JSON.stringify({
             session_id:session_id,
-            message:message
+            message:message,
+            user_id:user_id 
         })
 
     })
@@ -287,10 +287,18 @@ async function loadSessions(){
 
             if(!confirm("确定删除该聊天？")) return
 
-            await fetch(`http://127.0.0.1:8000/session/${s.session_id}`,{
-            method:"DELETE"})
+            await fetch(`http://127.0.0.1:8000/session/${s.session_id}?user_id=${user_id}`,{
+                 method:"DELETE"
+            })
 
-            loadSessions()
+            // ✅ 如果删除的是当前会话
+            if(session_id === s.session_id){
+                session_id = Date.now().toString()
+                localStorage.setItem("session_id", session_id)
+                document.getElementById("chat").innerHTML = ""
+            }
+
+                loadSessions()
         }
 
         div.appendChild(title)

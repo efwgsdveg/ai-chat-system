@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from api.chat_api import router as auth_router
+from api.chat_api import router as chat_router
+from api.auth_api import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
-from models import chat_model
-from models import user_model
 from storage.database import engine, Base
 
 app = FastAPI(
@@ -20,4 +19,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ 注册两个路由
 app.include_router(auth_router)
+app.include_router(chat_router)

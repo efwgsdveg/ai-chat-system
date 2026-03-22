@@ -15,11 +15,23 @@ def call_qianfan(messages):
     }
 
     try:
-        response = requests.post(QIANFAN_URL, headers=headers, json=data, timeout=30)
+        response = requests.post(
+            QIANFAN_URL,
+            headers=headers,
+            json=data,
+            timeout=30,
+            proxies={"http": None, "https": None}   # ✅ 关键修复
+        )
+
+        print("状态码:", response.status_code)
+        print("返回内容:", response.text)
+
         response.raise_for_status()
+
         res_json = response.json()
 
         return res_json["choices"][0]["message"]["content"]
 
     except Exception as e:
+        print("❌ 千帆调用失败:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
